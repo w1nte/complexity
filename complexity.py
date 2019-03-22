@@ -10,7 +10,6 @@ complexity_functions = [
             ["Linear", lambda n: n],
             ["n*log(n)", lambda n: n * math.log(n)],
             ["n*log2(n)", lambda n: n * math.log2(n)],
-            ["n*log(n)*100", lambda n: n * math.log(n)*100],
             ["Quadratisch", lambda n: math.pow(n, 2)],
             ["Kubisch", lambda n: math.pow(n, 3)],
             #["Exponentiell", lambda n: math.pow(2, n)] # dont use it
@@ -43,12 +42,6 @@ def test(function):
             f = list(map(lambda x1, x2: x1/x2, r[1], results)) # divide through results
             f = list(map(lambda x: round(x/f[0], 3), f)) # divide all elements through first element
             print(r[0], round(sum(f)/len(f)-1, 2)*100, "%")
-        print("-------------------------------------")
+        print("------------------------------------")
+
     return wrapped
-
-
-
-
-
-if __name__ == '__main__':
-    algodat_01_5b()
