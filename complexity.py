@@ -23,7 +23,7 @@ def test(function):
         results = []
         cf_results = list(map(lambda m: [m[0], []], complexity_functions))
 
-        print("Test Complexity of function: {}".format(function.__name__))
+        print("Test complexity of {}".format(function.__name__))
 
         start = time.time()
         for n in testrange:
@@ -35,13 +35,13 @@ def test(function):
                 cf_results[i][1].append(c[1](n))
 
         print("Duration: {} ms".format((end - start) * 1000))
-        print("Results ------------------------------------")
+        print("-- Results -----------------------------")
         print("Testrange {}".format(testrange))
         print("Function", results)
         for i, r in enumerate(cf_results):
             f = list(map(lambda x1, x2: x1/x2, r[1], results)) # divide through results
             f = list(map(lambda x: round(x/f[0], 3), f)) # divide all elements through first element
             print(r[0], round(sum(f)/len(f)-1, 2)*100, "%")
-        print("------------------------------------")
+        print("----------------------------------------")
 
     return wrapped

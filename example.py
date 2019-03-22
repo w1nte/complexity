@@ -1,8 +1,9 @@
 import complexity
 
+
 @complexity.test
 def algodat_01_5b(n):
-    c = 1  # cost
+    c = 1  # cost of the function
 
     i = 1
     x = 1
@@ -15,7 +16,9 @@ def algodat_01_5b(n):
         i = a/2
         c += 1
 
-    return c
+    return c  # returns the costs
+
 
 if __name__ == '__main__':
+
     algodat_01_5b()
