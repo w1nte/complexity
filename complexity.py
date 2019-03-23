@@ -1,17 +1,18 @@
-import time
 import math
+import numpy as np
+from terminaltables import AsciiTable
 
 testrange = [10, 100, 1000, 10000]
 
 complexity_functions = [
-            ["Konstant", lambda n: 1],
-            ["Logarithmisch", lambda n: math.log(n)],
+            ["Constant", lambda n: 1],
+            ["Logarithmic", lambda n: math.log(n)],
             ["log^2(n)", lambda n: math.log(n) * math.log(n)],
             ["Linear", lambda n: n],
             ["n*log(n)", lambda n: n * math.log(n)],
             ["n*log2(n)", lambda n: n * math.log2(n)],
-            ["Quadratisch", lambda n: math.pow(n, 2)],
-            ["Kubisch", lambda n: math.pow(n, 3)],
+            ["Quadratic", lambda n: math.pow(n, 2)],
+            ["Cubic", lambda n: math.pow(n, 3)],
             #["Exponentiell", lambda n: math.pow(2, n)] # dont use it
         ]
 
@@ -21,27 +22,31 @@ def test(function):
     def wrapped(*args, **kw):
 
         results = []
-        cf_results = list(map(lambda m: [m[0], []], complexity_functions))
+        cf_results = list(map(lambda x: [x[0], []], complexity_functions))
 
-        print("Test complexity of {}".format(function.__name__))
+        print("Test complexity of {}\r\n".format(function.__name__))
 
-        start = time.time()
         for n in testrange:
             results.append(function(n, *args, **kw))
-        end = time.time()
 
-        for n in testrange:
             for i, c in enumerate(complexity_functions):
                 cf_results[i][1].append(c[1](n))
 
-        print("Duration: {} ms".format((end - start) * 1000))
-        print("-- Results -----------------------------")
-        print("Testrange {}".format(testrange))
-        print("Function", results)
-        for i, r in enumerate(cf_results):
-            f = list(map(lambda x1, x2: x1/x2, r[1], results)) # divide through results
-            f = list(map(lambda x: round(x/f[0], 3), f)) # divide all elements through first element
-            print(r[0], round(sum(f)/len(f)-1, 2)*100, "%")
-        print("----------------------------------------")
+        results = np.array(results)
+        cf_results = list(map(lambda x: [x[0], np.array(x[1])], cf_results))
+
+        table_data = [
+            ["Function", "Divergence"]
+        ]
+        print(AsciiTable([testrange], "Testrange").table)
+
+        for i, c in enumerate(cf_results):
+            f = (results / c[1]) / (results[0] / c[1][0])
+            divergence = (np.sum(f) / len(f) - 1) * 100
+
+            table_data.append([c[0], "{:.2f} %".format(divergence)])
+
+        result_table = AsciiTable(table_data, "Results")
+        print(result_table.table)
 
     return wrapped
