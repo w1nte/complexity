@@ -4,11 +4,11 @@ import random
 
 
 @complexity.test
-def selectionsort(n, shuffle=False):
+def selectionsort(n, shuffle=False, generator=lambda n: list(range(n, 0, -1))):
 
     c = 1  # cost of the function
 
-    li = list(range(n, 0, -1))
+    li = generator(n)
 
     if shuffle:
         random.shuffle(li)
@@ -27,8 +27,8 @@ def selectionsort(n, shuffle=False):
     return c
 
 
-complexity.testrange = [10, 100, 1000]
-
 if __name__ == '__main__':
+
+    complexity.testrange = [10, 100, 1000]
 
     selectionsort(shuffle=True)
