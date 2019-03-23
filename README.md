@@ -1,6 +1,8 @@
 # Complexity Test
 A simple tool to analyse the complexity of functions.
 
+![Example Result](example.jpg)
+
 ## How to use it?
 See [example.py](example.py)
 
