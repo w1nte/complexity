@@ -21,32 +21,38 @@ def test(function):
 
     def wrapped(*args, **kw):
 
-        results = []
+        print("Test complexity of {} ...\r\n".format(function.__name__))
+
+        f_results = []
         cf_results = list(map(lambda x: [x[0], []], complexity_functions))
 
-        print("Test complexity of {}\r\n".format(function.__name__))
-
         for n in testrange:
-            results.append(function(n, *args, **kw))
+            f_results.append(function(n, *args, **kw))
 
             for i, c in enumerate(complexity_functions):
                 cf_results[i][1].append(c[1](n))
 
-        results = np.array(results)
-        cf_results = list(map(lambda x: [x[0], np.array(x[1])], cf_results))
+        np_f_results = np.array(f_results)
+        np_cf_results = list(map(lambda x: [x[0], np.array(x[1])], cf_results))
+
+        data = []
+        data.append([function.__name__, 0])
+
+        for i, c in enumerate(np_cf_results):
+            f = (np_f_results / c[1]) / (np_f_results[0] / c[1][0])
+            divergence = (1 - np.sum(f) / len(f)) * 100
+
+            data.append([c[0], divergence])
+
+        data = sorted(data, key=lambda x: x[1], reverse=True)
 
         table_data = [
             ["Function", "Divergence"]
-        ]
-        print(AsciiTable([testrange], "Testrange").table)
-
-        for i, c in enumerate(cf_results):
-            f = (results / c[1]) / (results[0] / c[1][0])
-            divergence = (np.sum(f) / len(f) - 1) * 100
-
-            table_data.append([c[0], "{:.2f} %".format(divergence)])
+        ] + list(map(lambda x: [x[0], "{:.2f} %".format(x[1])], data))
 
         result_table = AsciiTable(table_data, "Results")
+
+        print(AsciiTable([testrange, f_results], " Testrange ").table, "\r\n")
         print(result_table.table)
 
     return wrapped
