@@ -10,9 +10,9 @@ complexity_functions = [
             ["log^2(n)", lambda n: math.log(n) * math.log(n)],
             ["Linear", lambda n: n],
             ["n*log(n)", lambda n: n * math.log(n)],
-            ["n*log2(n)", lambda n: n * math.log2(n)],
             ["Quadratic", lambda n: math.pow(n, 2)],
             ["Cubic", lambda n: math.pow(n, 3)],
+            ['sqrt', lambda n: math.sqrt(n)],
             #["Exponentiell", lambda n: math.pow(2, n)] # dont use it
         ]
 
@@ -50,9 +50,9 @@ def test(function):
             ["Function", "Divergence"]
         ] + list(map(lambda x: [x[0], "{:.2f} %".format(x[1])], data))
 
-        result_table = AsciiTable(table_data, "Results")
+        result_table = AsciiTable(table_data, " Results ")
 
-        print(AsciiTable([testrange, f_results], " Testrange ").table, "\r\n")
+        print(AsciiTable([testrange, f_results], " Testrange & function ").table, "\r\n")
         print(result_table.table)
 
     return wrapped
