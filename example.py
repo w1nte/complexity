@@ -1,9 +1,8 @@
 import complexity
-
 import random
 
 
-@complexity.test
+# the first parameter has to be n
 def selectionsort(n, shuffle=False, generator=lambda n: list(range(n, 0, -1))):
 
     c = 1  # cost of the function
@@ -28,7 +27,8 @@ def selectionsort(n, shuffle=False, generator=lambda n: list(range(n, 0, -1))):
 
 
 if __name__ == '__main__':
+    # add function to the test queue, the function has to return the total costs
+    complexity.queue(selectionsort, shuffle=True)
 
-    complexity.testrange = [10, 100, 1000]
-
-    selectionsort(shuffle=True)
+    # runs all tests compared to selectionsort
+    complexity.test(selectionsort)
