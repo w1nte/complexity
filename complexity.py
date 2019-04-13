@@ -29,6 +29,7 @@ class _Functions:
 
     def __next__(self):
         if self.index >= len(self.list):
+            self.index = 0
             raise StopIteration
         else:
             self.index += 1
