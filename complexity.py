@@ -115,11 +115,12 @@ def test(base="Linear"):
 
     To add a new one, call complexity.queue(function).
     """
+    if callable(base):
+        base = base.__name__
+
     print("Test complexity of functions compared to {} ...".format(base), "\n")
     r = _test(to_test)
 
-    if callable(base):
-        base = base.__name__
     b = r.get(base)
 
     table_data = [
