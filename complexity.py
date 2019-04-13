@@ -2,57 +2,130 @@ import math
 import numpy as np
 from terminaltables import AsciiTable
 
-testrange = [10, 100, 1000, 10000]
 
-complexity_functions = [
-            ["Constant", lambda n: 1],
-            ["Logarithmic", lambda n: math.log(n)],
-            ["log^2(n)", lambda n: math.log(n) * math.log(n)],
-            ["Linear", lambda n: n],
-            ["n*log(n)", lambda n: n * math.log(n)],
-            ["Quadratic", lambda n: math.pow(n, 2)],
-            ["Cubic", lambda n: math.pow(n, 3)],
-            ['sqrt', lambda n: math.sqrt(n)],
-            #["Exponentiell", lambda n: math.pow(2, n)] # dont use it
-        ]
+class _Functions:
+    """
+    List of all Functions that should be tested
+    """
+    class Function:
+        def __init__(self, name, function, args, kwargs):
+            self.name = name
+            self.function = function
+            self.args = args
+            self.kwargs = kwargs
+
+        def run(self, n):
+            return self.function(n, *self.args, **self.kwargs)
+
+    def __init__(self):
+        self.index = 0
+        self.list = []
+
+    def push(self, name, function, *args, **kwargs):
+        self.list.append(self.Function(name, function, args, kwargs))
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index >= len(self.list):
+            raise StopIteration
+        else:
+            self.index += 1
+            return self.list[self.index - 1]
 
 
-def test(function):
+class _Results:
+    """
+    List of the tested Results
+    """
+    class Result:
+        def __init__(self, name, results):
+            self.name = name
+            self.results = results
 
-    def wrapped(*args, **kw):
+        def divergence(self, base=None):
+            results = self.results
+            if base:
+                results = (base.results / results) / (base.results[0] / results[0])
 
-        print("Test complexity of {} ...\r\n".format(function.__name__))
+            divergence = (1 - np.sum(results) / len(results)) * 100
+            return divergence
 
-        f_results = []
-        cf_results = list(map(lambda x: [x[0], []], complexity_functions))
+    def __init__(self):
+        self.list = []
 
-        for n in testrange:
-            f_results.append(function(n, *args, **kw))
+    def push(self, name, results):
+        self.list.append(self.Result(name, results))
 
-            for i, c in enumerate(complexity_functions):
-                cf_results[i][1].append(c[1](n))
+    def get(self, name):
+        for r in self.list:
+            if r.name == name:
+                return r
+        return None
 
-        np_f_results = np.array(f_results)
-        np_cf_results = list(map(lambda x: [x[0], np.array(x[1])], cf_results))
+    def sorted_by_divergence(self):
+        sorted_results = sorted(self.list, key=lambda x: x.divergence())
+        return sorted_results
 
-        data = []
-        data.append([function.__name__, 0])
 
-        for i, c in enumerate(np_cf_results):
-            f = (np_f_results / c[1]) / (np_f_results[0] / c[1][0])
-            divergence = (1 - np.sum(f) / len(f)) * 100
+def _test(Functions):
 
-            data.append([c[0], divergence])
+    r = _Results()
 
-        data = sorted(data, key=lambda x: x[1], reverse=True)
+    for f in Functions:
+        results = np.array([])
+        for t in testrange:
+            results = np.append(results, f.run(t))
 
-        table_data = [
-            ["Function", "Divergence"]
-        ] + list(map(lambda x: [x[0], "{:.2f} %".format(x[1])], data))
+        r.push(f.name, results)
 
-        result_table = AsciiTable(table_data, " Results ")
+    return r
 
-        print(AsciiTable([testrange, f_results], " Testrange & function ").table, "\r\n")
-        print(result_table.table)
+        
+to_test = _Functions()
+to_test.push("Constant", lambda n: 1)
+to_test.push("Logarithmic", lambda n: math.log(n))
+to_test.push("log^2(n)", lambda n: math.log(n) * math.log(n))
+to_test.push("Linear", lambda n: n)
+to_test.push("n*log(n)", lambda n: n * math.log(n))
+to_test.push("Quadratic", lambda n: math.pow(n, 2))
+to_test.push("Cubic", lambda n: math.pow(n, 3))
+to_test.push('sqrt', lambda n: math.sqrt(n))
 
-    return wrapped
+# range array that describes which n will be tested
+testrange = [10, 100, 1000]
+
+
+def queue(function, *args, **kw):
+    """
+    Adds a function to the test queue.
+
+    The first Argument of the function has to be the input size n
+    and has to return the costs.
+
+    To run the test, call complexity.test()
+    """
+    to_test.push(function.__name__, function, *args, **kw)
+
+
+def test(base="Linear"):
+    """
+    Tests all inserted functions.
+
+    To add a new one, call complexity.queue(function).
+    """
+    print("Test complexity of functions compared to {} ...".format(base), "\n")
+    r = _test(to_test)
+
+    if callable(base):
+        base = base.__name__
+    b = r.get(base)
+
+    table_data = [
+        ["Function", "Divergence"]
+    ] + list(map(lambda x: [x.name, "{:.2f} %".format(x.divergence(b))], r.sorted_by_divergence()))
+
+    print(AsciiTable([testrange, b.results], " Testrange & function ").table, "\n")
+
+    print(AsciiTable(table_data, " Results ").table)
