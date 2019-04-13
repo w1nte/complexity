@@ -64,8 +64,8 @@ class _Results:
                 return r
         return None
 
-    def sorted_by_divergence(self):
-        sorted_results = sorted(self.list, key=lambda x: x.divergence())
+    def sorted_by_divergence(self, base=None):
+        sorted_results = sorted(self.list, key=lambda x: x.divergence(base))
         return sorted_results
 
 
@@ -97,7 +97,7 @@ to_test.push('sqrt', lambda n: math.sqrt(n))
 testrange = [10, 100, 1000]
 
 
-def queue(function, *args, **kw):
+def queue(function, *args, name=None, **kw):
     """
     Adds a function to the test queue.
 
@@ -106,7 +106,7 @@ def queue(function, *args, **kw):
 
     To run the test, call complexity.test()
     """
-    to_test.push(function.__name__, function, *args, **kw)
+    to_test.push(function.__name__ if not name else name, function, *args, **kw)
 
 
 def test(base="Linear"):
@@ -124,9 +124,7 @@ def test(base="Linear"):
     b = r.get(base)
 
     table_data = [
-        ["Function", "Divergence"]
-    ] + list(map(lambda x: [x.name, "{:.2f} %".format(x.divergence(b))], r.sorted_by_divergence()))
-
-    print(AsciiTable([testrange, b.results], " Testrange & function ").table, "\n")
+        ["Function", "Divergence"] + testrange
+    ] + list(map(lambda x: [x.name, "{:.2f} %".format(x.divergence(b))] + list(map(lambda y: round(y), x.results)), r.sorted_by_divergence(b)))[::-1]
 
     print(AsciiTable(table_data, " Results ").table)

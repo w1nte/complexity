@@ -1,7 +1,6 @@
 import complexity
 import random
 
-
 # the first parameter has to be n
 def selectionsort(n, shuffle=False, generator=lambda n: list(range(n, 0, -1))):
 
@@ -29,6 +28,10 @@ def selectionsort(n, shuffle=False, generator=lambda n: list(range(n, 0, -1))):
 if __name__ == '__main__':
     # add function to the test queue, the function has to return the total costs
     complexity.queue(selectionsort, shuffle=True)
+
+    # more examples
+    complexity.queue(selectionsort, shuffle=False, name="selectionsort without shuffle")
+    complexity.queue(lambda x: 20*x, name="Linear * Constant")
 
     # runs all tests compared to selectionsort
     complexity.test(selectionsort)
