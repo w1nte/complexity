@@ -7,7 +7,7 @@ A simple tool to analyse the complexity of functions.
 See [example.py](example.py)
 
 Instead of running on your local machine you can also test it in your Browser
-[repl.it](https://repl.it/repls/StrongQueasyLivedistro)
+[repl.it](https://repl.it/@w1nte/Complexity)
 
 ## Dependencies
 * numpy
