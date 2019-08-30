@@ -48,9 +48,9 @@ class _Results:
         def divergence(self, base=None):
             results = self.results
             if base:
-                results = (base.results / results) / (base.results[0] / results[0])
+                results = ((results / base.results) / results[0]) * base.results[0]
 
-            divergence = (1 - np.sum(results) / len(results)) * 100
+            divergence = (np.sum(results) / len(results)) * 100
             return divergence
 
     def __init__(self):
